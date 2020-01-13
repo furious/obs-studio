@@ -139,6 +139,8 @@ static bool obs_init_gpu_conversion(struct obs_video_info *ovi)
 			if (!video->convert_textures[2])
 				return false;
 			break;
+		default:
+			break;
 		}
 #ifdef _WIN32
 	}
@@ -189,6 +191,8 @@ static bool obs_init_gpu_copy_surfaces(struct obs_video_info *ovi, size_t i)
 			ovi->output_width, ovi->output_height, GS_R8);
 		if (!video->copy_surfaces[i][2])
 			return false;
+		break;
+	default:
 		break;
 	}
 
@@ -703,6 +707,8 @@ static const char *obs_signals[] = {
 	"void source_deactivate(ptr source)",
 	"void source_show(ptr source)",
 	"void source_hide(ptr source)",
+	"void source_audio_activate(ptr source)",
+	"void source_audio_deactivate(ptr source)",
 	"void source_rename(ptr source, string new_name, string prev_name)",
 	"void source_volume(ptr source, in out float volume)",
 	"void source_volume_level(ptr source, float level, float magnitude, "
@@ -865,8 +871,9 @@ static bool obs_init(const char *locale, const char *module_config_path,
 }
 
 #ifdef _WIN32
-extern void initialize_com(void);
+extern bool initialize_com(void);
 extern void uninitialize_com(void);
+static bool com_initialized = false;
 #endif
 
 /* Separate from actual context initialization
@@ -927,7 +934,7 @@ bool obs_startup(const char *locale, const char *module_config_path,
 	}
 
 #ifdef _WIN32
-	initialize_com();
+	com_initialized = initialize_com();
 #endif
 
 	success = obs_init(locale, module_config_path, store);
@@ -1042,7 +1049,8 @@ void obs_shutdown(void)
 	bfree(cmdline_args.argv);
 
 #ifdef _WIN32
-	uninitialize_com();
+	if (com_initialized)
+		uninitialize_com();
 #endif
 }
 
@@ -1773,11 +1781,13 @@ static obs_source_t *obs_load_source_type(obs_data_t *source_data)
 	int di_mode;
 	int monitoring_type;
 
-	source = obs_source_create(id, name, settings, hotkeys);
+	prev_ver = (uint32_t)obs_data_get_int(source_data, "prev_ver");
+
+	source = obs_source_create_set_last_ver(id, name, settings, hotkeys,
+						prev_ver);
 
 	obs_data_release(hotkeys);
 
-	prev_ver = (uint32_t)obs_data_get_int(source_data, "prev_ver");
 	caps = obs_source_get_output_flags(source);
 
 	obs_data_set_default_double(source_data, "volume", 1.0);

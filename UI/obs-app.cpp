@@ -735,6 +735,18 @@ bool OBSApp::InitGlobalConfig()
 		changed = true;
 	}
 
+#define PRE_24_1_DEFS "Pre24.1Defaults"
+	if (!config_has_user_value(globalConfig, "General", PRE_24_1_DEFS)) {
+		bool useOldDefaults = lastVersion &&
+				      lastVersion <
+					      MAKE_SEMANTIC_VERSION(24, 1, 0);
+
+		config_set_bool(globalConfig, "General", PRE_24_1_DEFS,
+				useOldDefaults);
+		changed = true;
+	}
+#undef PRE_24_1_DEFS
+
 	if (config_has_user_value(globalConfig, "BasicWindow",
 				  "MultiviewLayout")) {
 		const char *layout = config_get_string(
@@ -1059,21 +1071,27 @@ bool OBSApp::InitTheme()
 	defaultPalette = palette();
 
 	const char *themeName =
-		config_get_string(globalConfig, "General", "CurrentTheme");
+		config_get_string(globalConfig, "General", "CurrentTheme2");
 
-	if (!themeName) {
+	if (!themeName)
+		/* Use deprecated "CurrentTheme" value if available */
+		themeName = config_get_string(globalConfig, "General",
+					      "CurrentTheme");
+	if (!themeName)
 		/* Use deprecated "Theme" value if available */
 		themeName = config_get_string(globalConfig, "General", "Theme");
-		if (!themeName)
-			themeName = DEFAULT_THEME;
-		if (!themeName)
-			themeName = "Dark";
-	}
+	if (!themeName)
+		themeName = DEFAULT_THEME;
+	if (!themeName)
+		themeName = "Dark";
 
 	if (strcmp(themeName, "Default") == 0)
 		themeName = "System";
 
-	return SetTheme(themeName);
+	if (strcmp(themeName, "System") != 0 && SetTheme(themeName))
+		return true;
+
+	return SetTheme("System");
 }
 
 OBSApp::OBSApp(int &argc, char **argv, profiler_name_store_t *store)
@@ -1909,6 +1927,18 @@ static void load_debug_privilege(void)
 
 		AdjustTokenPrivileges(token, false, &tp, sizeof(tp), NULL,
 				      NULL);
+	}
+
+	if (!!LookupPrivilegeValue(NULL, SE_INC_BASE_PRIORITY_NAME, &val)) {
+		tp.PrivilegeCount = 1;
+		tp.Privileges[0].Luid = val;
+		tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+
+		if (!AdjustTokenPrivileges(token, false, &tp, sizeof(tp), NULL,
+					   NULL)) {
+			blog(LOG_INFO, "Could not set privilege to "
+				       "increase GPU priority");
+		}
 	}
 
 	CloseHandle(token);

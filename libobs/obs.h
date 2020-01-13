@@ -317,7 +317,7 @@ EXPORT uint32_t obs_get_version(void);
 EXPORT const char *obs_get_version_string(void);
 
 /**
- * Sets things up for calls to obs_get_cmdline_args. Called onl yonce at startup
+ * Sets things up for calls to obs_get_cmdline_args. Called only once at startup
  * and safely copies argv/argc from main(). Subsequent calls do nothing.
  *
  * @param  argc  The count of command line arguments, from main()
@@ -1312,6 +1312,11 @@ EXPORT bool obs_source_async_unbuffered(const obs_source_t *source);
 EXPORT void obs_source_set_async_decoupled(obs_source_t *source, bool decouple);
 EXPORT bool obs_source_async_decoupled(const obs_source_t *source);
 
+EXPORT void obs_source_set_audio_active(obs_source_t *source, bool show);
+EXPORT bool obs_source_audio_active(const obs_source_t *source);
+
+EXPORT uint32_t obs_source_get_last_obs_version(const obs_source_t *source);
+
 /* ------------------------------------------------------------------------- */
 /* Transition-specific functions */
 enum obs_transition_target {
@@ -1328,6 +1333,7 @@ EXPORT obs_source_t *obs_transition_get_active_source(obs_source_t *transition);
 
 enum obs_transition_mode {
 	OBS_TRANSITION_MODE_AUTO,
+	OBS_TRANSITION_MODE_MANUAL,
 };
 
 EXPORT bool obs_transition_start(obs_source_t *transition,
@@ -1335,6 +1341,10 @@ EXPORT bool obs_transition_start(obs_source_t *transition,
 				 uint32_t duration_ms, obs_source_t *dest);
 
 EXPORT void obs_transition_set(obs_source_t *transition, obs_source_t *source);
+
+EXPORT void obs_transition_set_manual_time(obs_source_t *transition, float t);
+EXPORT void obs_transition_set_manual_torque(obs_source_t *transition,
+					     float torque, float clamp);
 
 enum obs_transition_scale_type {
 	OBS_TRANSITION_SCALE_MAX_ONLY,
@@ -1484,7 +1494,7 @@ EXPORT obs_scene_t *obs_sceneitem_get_scene(const obs_sceneitem_t *item);
 EXPORT obs_source_t *obs_sceneitem_get_source(const obs_sceneitem_t *item);
 
 /* FIXME: The following functions should be deprecated and replaced with a way
- * to specify savable private user data. -Jim */
+ * to specify saveable private user data. -Jim */
 EXPORT void obs_sceneitem_select(obs_sceneitem_t *item, bool select);
 EXPORT bool obs_sceneitem_selected(const obs_sceneitem_t *item);
 EXPORT bool obs_sceneitem_locked(const obs_sceneitem_t *item);
@@ -1597,6 +1607,9 @@ EXPORT void obs_sceneitem_group_enum_items(obs_sceneitem_t *group,
 							    obs_sceneitem_t *,
 							    void *),
 					   void *param);
+
+/** Gets the group from its source, or NULL if not a group */
+EXPORT obs_scene_t *obs_group_from_source(const obs_source_t *source);
 
 EXPORT void obs_sceneitem_defer_group_resize_begin(obs_sceneitem_t *item);
 EXPORT void obs_sceneitem_defer_group_resize_end(obs_sceneitem_t *item);
@@ -2161,6 +2174,10 @@ static inline void obs_source_frame_destroy(struct obs_source_frame *frame)
 
 EXPORT void obs_source_frame_copy(struct obs_source_frame *dst,
 				  const struct obs_source_frame *src);
+
+/* ------------------------------------------------------------------------- */
+/* Get source icon type */
+EXPORT enum obs_icon_type obs_source_get_icon_type(const char *id);
 
 #ifdef __cplusplus
 }

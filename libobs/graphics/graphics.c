@@ -1272,9 +1272,6 @@ gs_swapchain_t *gs_swapchain_create(const struct gs_init_data *data)
 	if (!gs_valid_p("gs_swapchain_create", data))
 		return NULL;
 
-	if (new_data.num_backbuffers == 0)
-		new_data.num_backbuffers = 1;
-
 	return graphics->exports.device_swapchain_create(graphics->device,
 							 &new_data);
 }
@@ -1735,6 +1732,16 @@ void gs_stage_texture(gs_stagesurf_t *dst, gs_texture_t *src)
 		return;
 
 	graphics->exports.device_stage_texture(graphics->device, dst, src);
+}
+
+void gs_begin_frame(void)
+{
+	graphics_t *graphics = thread_graphics;
+
+	if (!gs_valid("gs_begin_frame"))
+		return;
+
+	graphics->exports.device_begin_frame(graphics->device);
 }
 
 void gs_begin_scene(void)

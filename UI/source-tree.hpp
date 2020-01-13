@@ -181,6 +181,8 @@ public:
 	bool GroupsSelected() const;
 	bool GroupedItemsSelected() const;
 
+	void UpdateIcons();
+
 public slots:
 	inline void ReorderItems() { GetStm()->ReorderItems(); }
 	void Remove(OBSSceneItem item);

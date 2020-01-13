@@ -417,6 +417,8 @@ void AutoConfigStreamPage::on_connectAccount_clicked()
 #ifdef BROWSER_AVAILABLE
 	std::string service = QT_TO_UTF8(ui->service->currentText());
 
+	OAuth::DeleteCookies(service);
+
 	auth = OAuthStreamKey::Login(this, service);
 	if (!!auth)
 		OnAuthConnected();
@@ -578,6 +580,13 @@ void AutoConfigStreamPage::UpdateKeyLink()
 	} else if (serviceName.startsWith("Restream.io")) {
 		text += " <a href=\"https://";
 		text += "restream.io/settings/streaming-setup?from=OBS";
+		text += "\">";
+		text += QTStr(
+			"Basic.AutoConfig.StreamPage.StreamKey.LinkToSite");
+		text += "</a>";
+	} else if (serviceName == "YouStreamer") {
+		text += " <a href=\"https://";
+		text += "app.youstreamer.com/stream";
 		text += "\">";
 		text += QTStr(
 			"Basic.AutoConfig.StreamPage.StreamKey.LinkToSite");

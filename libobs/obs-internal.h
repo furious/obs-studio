@@ -563,6 +563,7 @@ struct obs_source {
 	/* general exposed flags that can be set for the source */
 	uint32_t flags;
 	uint32_t default_flags;
+	uint32_t last_obs_ver;
 
 	/* indicates ownership of the info.id buffer */
 	bool owns_info_id;
@@ -602,6 +603,7 @@ struct obs_source {
 	bool audio_failed;
 	bool audio_pending;
 	bool pending_stop;
+	bool audio_active;
 	bool user_muted;
 	bool muted;
 	struct obs_source *next_audio_source;
@@ -698,6 +700,10 @@ struct obs_source {
 	gs_texrender_t *transition_texrender[2];
 	pthread_mutex_t transition_mutex;
 	obs_source_t *transition_sources[2];
+	float transition_manual_clamp;
+	float transition_manual_torque;
+	float transition_manual_target;
+	float transition_manual_val;
 	bool transitioning_video;
 	bool transitioning_audio;
 	bool transition_source_active[2];
@@ -725,7 +731,7 @@ extern bool obs_source_init_context(struct obs_source *source,
 
 extern bool obs_transition_init(obs_source_t *transition);
 extern void obs_transition_free(obs_source_t *transition);
-extern void obs_transition_tick(obs_source_t *transition);
+extern void obs_transition_tick(obs_source_t *transition, float t);
 extern void obs_transition_enum_sources(obs_source_t *transition,
 					obs_source_enum_proc_t enum_callback,
 					void *param);
@@ -736,6 +742,11 @@ struct audio_monitor *audio_monitor_create(obs_source_t *source);
 void audio_monitor_reset(struct audio_monitor *monitor);
 extern void audio_monitor_destroy(struct audio_monitor *monitor);
 
+extern obs_source_t *obs_source_create_set_last_ver(const char *id,
+						    const char *name,
+						    obs_data_t *settings,
+						    obs_data_t *hotkey_data,
+						    uint32_t last_obs_ver);
 extern void obs_source_destroy(struct obs_source *source);
 
 enum view_type {

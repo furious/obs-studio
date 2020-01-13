@@ -316,10 +316,6 @@
                     "url": "ingest-fra.mixer.com"
                 },
                 {
-                    "name": "EU: Oslo",
-                    "url": "ingest-osl.mixer.com"
-                },
-                {
                     "name": "Brazil: Sao Paulo",
                     "url": "ingest-sao.mixer.com"
                 },
@@ -358,7 +354,8 @@
                 "max audio bitrate": 160,
                 "max video bitrate": 10000,
                 "profile": "main",
-                "bframes": 0
+                "bframes": 0,
+                "x264opts": "scenecut=0"
             }
         },
         {
@@ -406,10 +403,6 @@
                     "url": "rtmp://ingest-fra.mixer.com:1935/beam"
                 },
                 {
-                    "name": "EU: Oslo",
-                    "url": "rtmp://ingest-osl.mixer.com:1935/beam"
-                },
-                {
                     "name": "Brazil: Sao Paulo",
                     "url": "rtmp://ingest-sao.mixer.com:1935/beam"
                 },
@@ -446,7 +439,8 @@
                 "keyint": 2,
                 "max audio bitrate": 160,
                 "max video bitrate": 10000,
-                "profile": "main"
+                "profile": "main",
+                "x264opts": "scenecut=0"
             }
         },
         {
@@ -485,6 +479,15 @@
                 {
                     "name": "Моscow",
                     "url": "rtmp://msk.goodgame.ru:1940/live"
+                }
+            ]
+        },
+        {
+            "name": "YouStreamer",
+            "servers": [
+                {
+                    "name": "Moscow",
+                    "url": "rtmp://push.youstreamer.com/in/"
                 }
             ]
         },
@@ -573,7 +576,7 @@
             "recommended": {
                 "keyint": 2,
                 "profile": "main",
-                "max video bitrate": 4000,
+                "max video bitrate": 6000,
                 "max audio bitrate": 128
             }
         },
@@ -615,6 +618,10 @@
                 {
                     "name": "EU-East (Falkenstein, DE)",
                     "url": "rtmp://falkenstein.restream.io/live"
+                },
+                {
+                    "name": "EU-East (Prague, Czech)",
+                    "url": "rtmp://prague.restream.io/live"
                 },
                 {
                     "name": "EU-South (Madrid, Spain)",
@@ -726,6 +733,10 @@
                     "url": "falkenstein.restream.io"
                 },
                 {
+                    "name": "EU-East (Prague, Czech)",
+                    "url": "prague.restream.io"
+                },
+                {
                     "name": "EU-South (Madrid, Spain)",
                     "url": "madrid.restream.io"
                 },
@@ -802,19 +813,6 @@
                 "profile": "main",
                 "bframes": 0
             }
-        },
-        {
-          "name": "GameTips.TV",
-          "servers": [
-              {
-                  "name": "Iran - Rasht",
-                  "url": "rtmp://rtmp.cdn.server1.gametips.tv:1935/hls"
-              },
-              {
-                  "name": "Germany - Falkenstein/Vogtland",
-                  "url": "rtmp://rtmp.cdn.server2.gametips.tv:1935/hls"
-              }
-          ]
         },
         {
             "name": "Nood",
@@ -1466,6 +1464,33 @@
             }
         },
         {
+            "name": "show-it.tv",
+            "servers": [
+                {
+                    "name": "Default",
+                    "url": "rtmp://stream-1.show-it.tv:1935/live"
+                }
+            ],
+            "recommend": {
+                "max video bitrate": 6000,
+                "max audio bitrate": 192
+            }
+        },
+        {
+            "name": "ChathostessModels",
+            "servers": [
+                {
+                    "name": "ChathostessModels - Default",
+                    "url": "rtmp://wowza01.foobarweb.com/cmschatsys_video"
+                }
+            ],
+            "recommended": {
+                "keyint": 2,
+                "max video bitrate": 3000,
+                "max audio bitrate": 128
+            }
+        },
+        {
             "name": "Camplace",
             "servers": [
                 {
@@ -1498,6 +1523,24 @@
                 "max audio bitrate": 192,
                 "bframes": 0,
                 "x264opts": "tune=zerolatency"
+            }
+        },
+        {
+            "name": "YouNow",
+            "common": false,
+            "servers": [
+                {
+                    "name": "younow.com",
+                    "url": "https://signaling-api.younow-prod.video.propsproject.com/api/v1/ingest/server/"
+                }
+            ],
+            "recommended": {
+                "keyint": 2,
+                "output": "ftl_output",
+                "max audio bitrate": 160,
+                "max video bitrate": 7000,
+                "profile": "main",
+                "bframes": 0
             }
         },
         {
@@ -1558,6 +1601,36 @@
                 "profile": "high",
                 "max video bitrate": 7000,
                 "max audio bitrate": 128
+            }
+        },
+        {
+            "name": "Stars.AVN.com",
+            "servers": [
+                {
+                    "name": "Default",
+                    "url": "rtmp://alpha.gateway.stars.avn.com/live"
+                }
+            ],
+            "recommended": {
+                "keyint": 2,
+                "profile": "main",
+                "max video bitrate": 2500,
+                "max audio bitrate": 192,
+                "bframes": 0,
+                "x264opts": "tune=zerolatency"
+            }
+        },
+        {
+            "name": "Konduit.live",
+            "servers": [
+                {
+                    "name": "Default",
+                    "url": "rtmp://rtmp.konduit.live/live"
+                }
+            ],
+            "recommended": {
+                "keyint": 2,
+                "x264opts": "scenecut=0"
             }
         }
     ]
